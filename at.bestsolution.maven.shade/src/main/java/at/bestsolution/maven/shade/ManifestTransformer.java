@@ -3,6 +3,7 @@ package at.bestsolution.maven.shade;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -15,8 +16,8 @@ import org.apache.maven.plugins.shade.resource.ResourceTransformer;
 public class ManifestTransformer implements ResourceTransformer {
 	private Manifest m;
 	
-	// Configuration
     private String mainClass;
+    private Map<String, Object> manifestEntries;
 	
 	public boolean canTransformResource(String resource) {
 		return JarFile.MANIFEST_NAME.equalsIgnoreCase( resource );
@@ -28,6 +29,12 @@ public class ManifestTransformer implements ResourceTransformer {
 			if ( mainClass != null ) {
 				m.getMainAttributes().put( Attributes.Name.MAIN_CLASS, mainClass );
 	        }
+			
+			 if ( manifestEntries != null ) {
+				 manifestEntries.entrySet()
+				 	.forEach( e -> m.getMainAttributes().put(new Attributes.Name(e.getKey()), e.getValue()) );
+		        }
+			
 			m.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
 			m.getMainAttributes().put(new Attributes.Name("Created-By"), System.getProperty("java.version") + " ("+System.getProperty("java.vendor")+")");
 			m.getMainAttributes().put(new Attributes.Name("Tool"), "e(fx)clipse shade transformer");
