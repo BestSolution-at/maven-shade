@@ -12,7 +12,7 @@ import java.util.jar.Manifest;
 import org.apache.maven.plugins.shade.relocation.Relocator;
 import org.apache.maven.plugins.shade.resource.ResourceTransformer;
 
-public class CompManifestTransformer implements ResourceTransformer {
+public class ManifestTransformer implements ResourceTransformer {
 	private Manifest m;
 	
 	// Configuration
