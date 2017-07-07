@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -18,6 +19,7 @@ public class ManifestTransformer implements ResourceTransformer {
 	
     private String mainClass;
     private Map<String, Object> manifestEntries;
+    private Map<String,String> concatEntries;
 	
 	public boolean canTransformResource(String resource) {
 		return JarFile.MANIFEST_NAME.equalsIgnoreCase( resource );
@@ -40,17 +42,23 @@ public class ManifestTransformer implements ResourceTransformer {
 			m.getMainAttributes().put(new Attributes.Name("Tool"), "e(fx)clipse shade transformer");
 		}
 		
-		Manifest mm = new Manifest(is);
-		Attributes attributes = mm.getMainAttributes();
-		String serviceComponents = attributes.getValue(new Attributes.Name("Service-Component"));
-		if( serviceComponents != null ) {
-			String value = m.getMainAttributes().getValue(new Attributes.Name("Service-Component"));
-			if( value == null ) {
-				value = serviceComponents;
-			} else {
-				value += "," + serviceComponents;
+		
+		if( concatEntries != null ) {
+			Manifest mm = new Manifest(is);
+			Attributes attributes = mm.getMainAttributes();
+			
+			for( Entry<String, String> entry : concatEntries.entrySet() ) {
+				String serviceComponents = attributes.getValue(new Attributes.Name(entry.getKey()));
+				if( serviceComponents != null ) {
+					String value = m.getMainAttributes().getValue(new Attributes.Name(entry.getKey()));
+					if( value == null ) {
+						value = serviceComponents;
+					} else {
+						value += entry.getValue() + serviceComponents;
+					}
+					m.getMainAttributes().put(new Attributes.Name(entry.getKey()), value);
+				}
 			}
-			m.getMainAttributes().put(new Attributes.Name("Service-Component"), value);
 		}
 	}
 	
