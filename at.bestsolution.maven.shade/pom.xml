@@ -35,6 +35,15 @@
 		</snapshotRepository>
 	</distributionManagement>
 
+	<developers>
+		<developer>
+			<name>Tom Schindl</name>
+			<email>tom.schindl@bestsolution.at</email>
+			<organization>BestSolution</organization>
+			<organizationUrl>http://www.bestsolution.at</organizationUrl>
+		</developer>
+	</developers>
+
 	<build>
 		<plugins>
 			<plugin>
