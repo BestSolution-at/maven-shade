@@ -20,14 +20,18 @@ package at.bestsolution.maven.shade;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import org.apache.maven.plugins.shade.relocation.Relocator;
 import org.apache.maven.plugins.shade.resource.ResourceTransformer;
@@ -41,6 +45,7 @@ public class ManifestTransformer implements ResourceTransformer {
     private String mainClass;
     private Map<String, Object> manifestEntries;
     private Map<String,String> concatEntries;
+    private Set<String> registeredComponents = new HashSet<>();
 	
 	public boolean canTransformResource(String resource) {
 		return JarFile.MANIFEST_NAME.equalsIgnoreCase( resource );
@@ -71,13 +76,9 @@ public class ManifestTransformer implements ResourceTransformer {
 			for( Entry<String, String> entry : concatEntries.entrySet() ) {
 				String serviceComponents = attributes.getValue(new Attributes.Name(entry.getKey()));
 				if( serviceComponents != null ) {
-					String value = m.getMainAttributes().getValue(new Attributes.Name(entry.getKey()));
-					if( value == null ) {
-						value = serviceComponents;
-					} else {
-						value += entry.getValue() + serviceComponents;
-					}
-					m.getMainAttributes().put(new Attributes.Name(entry.getKey()), value);
+					registeredComponents.addAll(Arrays.asList(serviceComponents.split(",")));
+					String components = registeredComponents.stream().collect(Collectors.joining(","));
+					m.getMainAttributes().put(new Attributes.Name(entry.getKey()), components);
 				}
 			}
 		}

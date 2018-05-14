@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.bestsolution</groupId>
 	<artifactId>at.bestsolution.maven.shade</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 
 	<name>Maven Shade Plugin Extensions</name>
 	<description>Extensions for the Maven Shade Plugin</description>
